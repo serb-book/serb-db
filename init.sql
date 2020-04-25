@@ -13,10 +13,10 @@ GRANT CREATE SESSION  to book;
 
 CREATE TABLE book.account (
     id          NUMBER NOT NULL,
-    email       VARCHAR2(20 BYTE),
-    password    VARCHAR2(20 BYTE) NOT NULL,
-    username    VARCHAR2(20 BYTE) NOT NULL,
-    picture     VARCHAR2(20 BYTE),
+    email       VARCHAR2(50 BYTE),
+    password    VARCHAR2(50 BYTE) NOT NULL,
+    username    VARCHAR2(50 BYTE) NOT NULL,
+    picture     VARCHAR2(1000 BYTE),
     blocked_by  NUMBER
 )
 TABLESPACE system LOGGING;
@@ -54,8 +54,8 @@ CREATE TABLE book.book (
     id             NUMBER(*, 0) NOT NULL,
     refrence_link  VARCHAR2(1000 BYTE),
     description    VARCHAR2(500 BYTE) NOT NULL,
-    isbn           VARCHAR2(20 BYTE) NOT NULL,
-    title          VARCHAR2(20 BYTE) NOT NULL
+    isbn           VARCHAR2(30 BYTE) NOT NULL,
+    title          VARCHAR2(150 BYTE) NOT NULL
 )
 TABLESPACE system LOGGING;
 
@@ -74,20 +74,10 @@ ALTER TABLE book.book
         USING INDEX book.book_pk;
 
 CREATE TABLE book.book_authores (
-    name  VARCHAR2(100 BYTE),
+    name  VARCHAR2(100 BYTE) NOT NULL,
     id    NUMBER(*, 0) NOT NULL
 )
 TABLESPACE system LOGGING;
-
-CREATE UNIQUE INDEX book.book_authores_pk ON
-    book.book_authores (
-        id
-    ASC )
-        TABLESPACE system LOGGING;
-
-ALTER TABLE book.book_authores
-    ADD CONSTRAINT book_authores_pk PRIMARY KEY ( id )
-        USING INDEX book.book_authores_pk;
 
 CREATE TABLE book.book_belongsto_category (
     id           NUMBER NOT NULL,
@@ -616,6 +606,7 @@ ALTER TABLE book.account_phone
 ALTER TABLE book.book_authores
     ADD CONSTRAINT book_authores_fk1 FOREIGN KEY ( id )
         REFERENCES book.book ( id )
+            ON DELETE CASCADE
     NOT DEFERRABLE;
 
 ALTER TABLE book.book_belongsto_category
@@ -824,8 +815,8 @@ ALTER TABLE book.transaction
 -- Oracle SQL Developer Data Modeler Summary Report: 
 -- 
 -- CREATE TABLE                            35
--- CREATE INDEX                            27
--- ALTER TABLE                             71
+-- CREATE INDEX                            26
+-- ALTER TABLE                             70
 -- CREATE VIEW                              0
 -- ALTER VIEW                               0
 -- CREATE PACKAGE                           0
@@ -849,7 +840,7 @@ ALTER TABLE book.transaction
 -- CREATE MATERIALIZED VIEW                 0
 -- CREATE MATERIALIZED VIEW LOG             0
 -- CREATE SYNONYM                           0
--- CREATE TABLESPACE                        0
+-- CREATE TABLESPACE                        1
 -- CREATE USER                              1
 -- 
 -- DROP TABLESPACE                          0
@@ -862,4 +853,4 @@ ALTER TABLE book.transaction
 -- ORDS ENABLE OBJECT                       0
 -- 
 -- ERRORS                                   0
--- WARNINGS                                 0
+-- WARNINGS                                 1
