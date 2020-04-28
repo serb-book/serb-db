@@ -1,10 +1,11 @@
-# serb-db [under constraction]
+# serb-db 
 data base container for online book store based in [wnameless/docker-oracle-xe-11g](https://github.com/wnameless/docker-oracle-xe-11g) image
 
 # progress 
 - [x] build schema in container
 - [ ] fill with random data
-
+- [ ] add serb-backend dependacies
+- [ ] run serb-backend
 
 
 
