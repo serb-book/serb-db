@@ -1,10 +1,11 @@
-# serb-db [under constraction]
+# serb-db 
 data base container for online book store based in [wnameless/docker-oracle-xe-11g](https://github.com/wnameless/docker-oracle-xe-11g) image
 
 # progress 
 - [x] build schema in container
 - [ ] fill with random data
-
+- [ ] add serb-backend dependacies
+- [ ] run serb-backend
 
 
 
@@ -17,12 +18,14 @@ data base container for online book store based in [wnameless/docker-oracle-xe-1
 this will build docker image with user book and talbes from [this diagram](doc/schema_diagram.pdf)
 
 ## run container
->`sudo docker run -p 49161:1521 -p 8080:8080 --name test_booky -e ORACLE_ALLOW_REMOTE=true db/serb`
+>`sudo docker run -p 1521:1521 -p 8080:8080 --name test_booky -e ORACLE_ALLOW_REMOTE=true db/serb`
 
-connection credintials
+* you may change port maping if port is occupied  -p <local port>:<container port>
+
+### connection credintials
 ```
 hostname: localhost
-port: 49161
+port: 1521
 sid: xe
 username: book
 password: book
