@@ -6,4 +6,4 @@ git clone https://github.com/serb-book/serb-db.git
 sudo docker build -t db/serb ./serb-db
 sudo systemctl start docker.service
 sudo systemctl enable docker.service
-sudo docker run -p 1521:1521 -p 8081:8080 --name test_booky -e ORACLE_ALLOW_REMOTE=true db/serb
+sudo docker run -p 1521:1521 -p 8081:8080 --name serb -e ORACLE_ALLOW_REMOTE=true db/serb
