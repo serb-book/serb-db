@@ -10,6 +10,7 @@ data base container for online book store based in [wnameless/docker-oracle-xe-1
 
 
 # usage
+The easiest way get your database up and running is to use `./installation.sh` or you can do as follows
 ## build image 
 1. build (wnameless/docker-oracle-xe-11g) from [here](https://github.com/wnameless/docker-oracle-xe-11g#installationlocal)
 2. build image with custom book schema with
