@@ -11,366 +11,560 @@ GRANT UNLIMITED TABLESPACE TO book;
 GRANT CREATE SESSION  to book;
 
 
---------------------------------------------------------
---  DDL for Table ACCOUNT
---------------------------------------------------------
+CREATE TABLE book.account (
+    id          NUMBER NOT NULL,
+    email       VARCHAR2(50 BYTE),
+    password    VARCHAR2(50 BYTE) NOT NULL,
+    username    VARCHAR2(50 BYTE) NOT NULL,
+    picture     VARCHAR2(1000 BYTE),
+    blocked_by  NUMBER
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."ACCOUNT" 
-   (	"ID" NUMBER, 
-	"EMAIL" VARCHAR2(50), 
-	"PASSWORD" VARCHAR2(50), 
-	"USERNAME" VARCHAR2(50), 
-	"PICTURE" VARCHAR2(1000), 
-	"BLOCKED_BY" NUMBER
-   ) ;
+COMMENT ON COLUMN book.account.password IS
+    'use some encription length';
 
-   COMMENT ON COLUMN "BOOK"."ACCOUNT"."PASSWORD" IS 'use some encription length';
---------------------------------------------------------
---  DDL for Table ACCOUNT_PHONE
---------------------------------------------------------
+CREATE UNIQUE INDEX book.account_pk ON
+    book.account (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."ACCOUNT_PHONE" 
-   (	"PHONE_NUMBER" NUMBER, 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table BOOK
---------------------------------------------------------
+ALTER TABLE book.account
+    ADD CONSTRAINT account_pk PRIMARY KEY ( id )
+        USING INDEX book.account_pk;
 
-  CREATE TABLE "BOOK"."BOOK" 
-   (	"ID" NUMBER(*,0), 
-	"REFRENCE_LINK" VARCHAR2(1000), 
-	"DESCRIPTION" VARCHAR2(500), 
-	"ISBN" VARCHAR2(30), 
-	"TITLE" VARCHAR2(150)
-   ) ;
+CREATE TABLE book.account_phone (
+    phone_number  NUMBER,
+    id            NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."BOOK"."REFRENCE_LINK" IS 'using api of good read(linking for book in good red)
+CREATE UNIQUE INDEX book.account_phone_pk ON
+    book.account_phone (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.account_phone
+    ADD CONSTRAINT account_phone_pk PRIMARY KEY ( id )
+        USING INDEX book.account_phone_pk;
+
+CREATE TABLE book.book (
+    id             NUMBER(*, 0) NOT NULL,
+    refrence_link  VARCHAR2(1000 BYTE),
+    description    VARCHAR2(500 BYTE) NOT NULL,
+    isbn           VARCHAR2(30 BYTE) NOT NULL,
+    title          VARCHAR2(150 BYTE) NOT NULL
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.book.refrence_link IS
+    'using api of good read(linking for book in good red)
 ';
---------------------------------------------------------
---  DDL for Table BOOK_AUTHORES
---------------------------------------------------------
 
-  CREATE TABLE "BOOK"."BOOK_AUTHORES" 
-   (	"NAME" VARCHAR2(100), 
-	"ID" NUMBER(*,0)
-   ) ;
---------------------------------------------------------
---  DDL for Table BOOK_BELONGSTO_CATEGORY
---------------------------------------------------------
+CREATE UNIQUE INDEX book.book_pk ON
+    book.book (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" 
-   (	"ID" NUMBER, 
-	"BOOK_ID" NUMBER(*,0), 
-	"CATEGORY_ID" NUMBER(*,0)
-   ) ;
---------------------------------------------------------
---  DDL for Table CATEGORY
---------------------------------------------------------
+ALTER TABLE book.book
+    ADD CONSTRAINT book_pk PRIMARY KEY ( id )
+        USING INDEX book.book_pk;
 
-  CREATE TABLE "BOOK"."CATEGORY" 
-   (	"NAME" VARCHAR2(50), 
-	"ID" NUMBER(*,0), 
-	"SUPER_ID" NUMBER(*,0)
-   ) ;
+CREATE TABLE book.book_authores (
+    name  VARCHAR2(100 BYTE) NOT NULL,
+    id    NUMBER(*, 0) NOT NULL
+)
+TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."CATEGORY"."ID" IS 'MAY BE CHANGED LATER';
---------------------------------------------------------
---  DDL for Table CLIENT
---------------------------------------------------------
+CREATE TABLE book.book_belongsto_category (
+    id           NUMBER NOT NULL,
+    book_id      NUMBER(*, 0) NOT NULL,
+    category_id  NUMBER(*, 0) NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."CLIENT" 
-   (	"FULL_NAME" VARCHAR2(128), 
-	"SSN" NUMBER, 
-	"ACCOUNT_ID" NUMBER
-   ) ;
+CREATE UNIQUE INDEX book.book_belongsto_category_pk ON
+    book.book_belongsto_category (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."CLIENT"."SSN" IS 'limit it to 14 numbers';
---------------------------------------------------------
---  DDL for Table CLIENT_ADDRESS
---------------------------------------------------------
+ALTER TABLE book.book_belongsto_category
+    ADD CONSTRAINT book_belongsto_category_pk PRIMARY KEY ( id )
+        USING INDEX book.book_belongsto_category_pk;
 
-  CREATE TABLE "BOOK"."CLIENT_ADDRESS" 
-   (	"CITY" VARCHAR2(100), 
-	"GOVERNMENT" VARCHAR2(100), 
-	"STREET" VARCHAR2(500), 
-	"COUNTRY" VARCHAR2(100), 
-	"LONGITUDE" NUMBER, 
-	"LATITUDE" NUMBER, 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table CLIENT_FOLLOW_CLIENT
---------------------------------------------------------
+CREATE TABLE book.category (
+    name      VARCHAR2(50 BYTE) NOT NULL,
+    id        NUMBER(*, 0) NOT NULL,
+    super_id  NUMBER(*, 0)
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."CLIENT_FOLLOW_CLIENT" 
-   (	"FOLLOWER_ID" NUMBER, 
-	"FOLLOWED_ID" NUMBER, 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table CLIENT_INTERESTEDIN_CATEGORY
---------------------------------------------------------
+COMMENT ON COLUMN book.category.id IS
+    'MAY BE CHANGED LATER';
 
-  CREATE TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" 
-   (	"ID" NUMBER, 
-	"CLIENT_ID" NUMBER, 
-	"CATEGORY_ID" NUMBER(*,0)
-   ) ;
---------------------------------------------------------
---  DDL for Table CLIENT_MANAGE_CLUB
---------------------------------------------------------
+CREATE UNIQUE INDEX book.category_pk ON
+    book.category (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."CLIENT_MANAGE_CLUB" 
-   (	"RELATION_ID" NUMBER, 
-	"CLUB_ID" NUMBER, 
-	"PRIVILEGE_LEVEL" NUMBER DEFAULT 1, 
-	"CLIENT_ID" NUMBER
-   ) ;
+ALTER TABLE book.category
+    ADD CONSTRAINT category_pk PRIMARY KEY ( id )
+        USING INDEX book.category_pk;
 
-   COMMENT ON COLUMN "BOOK"."CLIENT_MANAGE_CLUB"."PRIVILEGE_LEVEL" IS 'admin = 0, moderator = 1';
---------------------------------------------------------
---  DDL for Table CLIENT_REVIEW_BOOK
---------------------------------------------------------
+CREATE TABLE book.client (
+    full_name   VARCHAR2(128 BYTE) NOT NULL,
+    ssn         NUMBER,
+    account_id  NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."CLIENT_REVIEW_BOOK" 
-   (	"ID" NUMBER, 
-	"CLIENT_ID" NUMBER, 
-	"BOOK_ID" NUMBER(*,0), 
-	"REVIEW_CONTETN" VARCHAR2(200), 
-	"REVIEW_SCORE" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table CLINET_JOIN_CLUB
---------------------------------------------------------
+COMMENT ON COLUMN book.client.ssn IS
+    'limit it to 14 numbers';
 
-  CREATE TABLE "BOOK"."CLINET_JOIN_CLUB" 
-   (	"ID" NUMBER, 
-	"CLIENT_ID" NUMBER, 
-	"CLUB_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table CLUB
---------------------------------------------------------
+CREATE UNIQUE INDEX book.client_pk ON
+    book.client (
+        account_id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."CLUB" 
-   (	"ID" NUMBER, 
-	"NAME" VARCHAR2(100)
-   ) ;
+ALTER TABLE book.client
+    ADD CONSTRAINT client_pk PRIMARY KEY ( account_id )
+        USING INDEX book.client_pk;
 
-   COMMENT ON COLUMN "BOOK"."CLUB"."ID" IS 'MAT BE CHANGED';
---------------------------------------------------------
---  DDL for Table GATE
---------------------------------------------------------
+CREATE TABLE book.client_address (
+    city        VARCHAR2(100 BYTE) NOT NULL,
+    government  VARCHAR2(100 BYTE) NOT NULL,
+    street      VARCHAR2(500 BYTE),
+    country     VARCHAR2(100 BYTE) NOT NULL,
+    longitude   NUMBER,
+    latitude    NUMBER,
+    id          NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."GATE" 
-   (	"URL" VARCHAR2(2083), 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table GATE_ACCESS
---------------------------------------------------------
+CREATE UNIQUE INDEX book.client_address_pk ON
+    book.client_address (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."GATE_ACCESS" 
-   (	"USER_TYPE" NUMBER, 
-	"ID" NUMBER
-   ) ;
+ALTER TABLE book.client_address
+    ADD CONSTRAINT client_address_pk PRIMARY KEY ( id )
+        USING INDEX book.client_address_pk;
 
-   COMMENT ON COLUMN "BOOK"."GATE_ACCESS"."USER_TYPE" IS '0:superuser
+CREATE TABLE book.client_follow_client (
+    follower_id  NUMBER,
+    followed_id  NUMBER,
+    id           NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.client_follow_client_pk ON
+    book.client_follow_client (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.client_follow_client
+    ADD CONSTRAINT client_follow_client_pk PRIMARY KEY ( id )
+        USING INDEX book.client_follow_client_pk;
+
+CREATE TABLE book.client_interestedin_category (
+    id           NUMBER NOT NULL,
+    client_id    NUMBER NOT NULL,
+    category_id  NUMBER(*, 0) NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.client_interestedin_catego_pk ON
+    book.client_interestedin_category (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.client_interestedin_category
+    ADD CONSTRAINT client_interestedin_catego_pk PRIMARY KEY ( id )
+        USING INDEX book.client_interestedin_catego_pk;
+
+CREATE TABLE book.client_manage_club (
+    relation_id      NUMBER NOT NULL,
+    club_id          NUMBER NOT NULL,
+    privilege_level  NUMBER DEFAULT 1 NOT NULL,
+    client_id        NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.client_manage_club.privilege_level IS
+    'admin = 0, moderator = 1';
+
+CREATE UNIQUE INDEX book.table1_pk ON
+    book.client_manage_club (
+        relation_id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.client_manage_club
+    ADD CONSTRAINT table1_pk PRIMARY KEY ( relation_id )
+        USING INDEX book.table1_pk;
+
+CREATE TABLE book.client_review_book (
+    id              NUMBER NOT NULL,
+    client_id       NUMBER NOT NULL,
+    book_id         NUMBER(*, 0) NOT NULL,
+    review_contetn  VARCHAR2(200 BYTE) NOT NULL,
+    review_score    NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.client_review_book_pk ON
+    book.client_review_book (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.client_review_book
+    ADD CONSTRAINT client_review_book_pk PRIMARY KEY ( id )
+        USING INDEX book.client_review_book_pk;
+
+CREATE TABLE book.clinet_join_club (
+    id         NUMBER NOT NULL,
+    client_id  NUMBER NOT NULL,
+    club_id    NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.clinet_join_club_pk ON
+    book.clinet_join_club (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.clinet_join_club
+    ADD CONSTRAINT clinet_join_club_pk PRIMARY KEY ( id )
+        USING INDEX book.clinet_join_club_pk;
+
+CREATE TABLE book.club (
+    id    NUMBER NOT NULL,
+    name  VARCHAR2(100 BYTE) NOT NULL
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.club.id IS
+    'MAT BE CHANGED';
+
+CREATE UNIQUE INDEX book.club_pk ON
+    book.club (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.club
+    ADD CONSTRAINT club_pk PRIMARY KEY ( id )
+        USING INDEX book.club_pk;
+
+CREATE TABLE book.gate (
+    url  VARCHAR2(2083 BYTE),
+    id   NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.gate_pk ON
+    book.gate (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.gate
+    ADD CONSTRAINT gate_pk PRIMARY KEY ( id )
+        USING INDEX book.gate_pk;
+
+CREATE TABLE book.gate_access (
+    user_type  NUMBER NOT NULL,
+    id         NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.gate_access.user_type IS
+    '0:superuser
 1:clien
 2:shipper';
---------------------------------------------------------
---  DDL for Table LIST
---------------------------------------------------------
 
-  CREATE TABLE "BOOK"."LIST" 
-   (	"NAME" VARCHAR2(50), 
-	"MADE_BY" NUMBER, 
-	"ICON" VARCHAR2(1000), 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table LIST_HAVE_BOOK
---------------------------------------------------------
+CREATE UNIQUE INDEX book.gate_access_pk ON
+    book.gate_access (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."LIST_HAVE_BOOK" 
-   (	"LIST_ID" NUMBER, 
-	"BOOK_ID" NUMBER(*,0)
-   ) ;
---------------------------------------------------------
---  DDL for Table MESSAGE
---------------------------------------------------------
+ALTER TABLE book.gate_access
+    ADD CONSTRAINT gate_access_pk PRIMARY KEY ( id )
+        USING INDEX book.gate_access_pk;
 
-  CREATE TABLE "BOOK"."MESSAGE" 
-   (	"ID" VARCHAR2(20), 
-	"CONTENT" VARCHAR2(200), 
-	"SEND_DATE" TIMESTAMP (6), 
-	"MEDIA_LINK" VARCHAR2(20), 
-	"SENDER_ID" NUMBER, 
-	"RECIVER_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER
---------------------------------------------------------
+CREATE TABLE book.list (
+    name     VARCHAR2(50 BYTE) NOT NULL,
+    made_by  NUMBER NOT NULL,
+    icon     VARCHAR2(1000 BYTE),
+    id       NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."OFFER" 
-   (	"ID" NUMBER, 
-	"PRICE" NUMBER, 
-	"TYPE" NUMBER, 
-	"OFFER_END_TIME" DATE, 
-	"CLIENT_ID" NUMBER, 
-	"BOOK_ID" NUMBER(*,0), 
-	"STATE_TEXT" VARCHAR2(1000)
-   ) ;
+CREATE UNIQUE INDEX book.list_pk ON
+    book.list (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."OFFER"."PRICE" IS 'sell :book price
+ALTER TABLE book.list
+    ADD CONSTRAINT list_pk PRIMARY KEY ( id )
+        USING INDEX book.list_pk;
+
+CREATE TABLE book.list_have_book (
+    list_id  NUMBER,
+    book_id  NUMBER(*, 0)
+)
+TABLESPACE system LOGGING;
+
+CREATE TABLE book.message (
+    id          VARCHAR2(20 BYTE) NOT NULL,
+    content     VARCHAR2(200 BYTE) NOT NULL,
+    send_date   TIMESTAMP NOT NULL,
+    media_link  VARCHAR2(20 BYTE),
+    sender_id   NUMBER NOT NULL,
+    reciver_id  NUMBER
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.message_pk ON
+    book.message (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.message
+    ADD CONSTRAINT message_pk PRIMARY KEY ( id )
+        USING INDEX book.message_pk;
+
+CREATE TABLE book.offer (
+    id              NUMBER NOT NULL,
+    price           NUMBER,
+    type            NUMBER NOT NULL,
+    offer_end_time  DATE,
+    client_id       NUMBER NOT NULL,
+    book_id         NUMBER(*, 0) NOT NULL,
+    state_text      VARCHAR2(200 BYTE)
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.offer.price IS
+    'sell :book price
 exchange : estamate price
 rent : price per day
 ';
-   COMMENT ON COLUMN "BOOK"."OFFER"."TYPE" IS '0:sell
+
+COMMENT ON COLUMN book.offer.type IS
+    '0:sell
 1:exchange
 2:rent';
-   COMMENT ON COLUMN "BOOK"."OFFER"."OFFER_END_TIME" IS 'option for renting';
---------------------------------------------------------
---  DDL for Table OFFER_EXCHANGE
---------------------------------------------------------
 
-  CREATE TABLE "BOOK"."OFFER_EXCHANGE" 
-   (	"OFFER_ID" NUMBER, 
-	"NEGOTIATION_PRICE" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER_EXCHANGE_INEREST_INLIST
---------------------------------------------------------
+COMMENT ON COLUMN book.offer.offer_end_time IS
+    'option for renting';
 
-  CREATE TABLE "BOOK"."OFFER_EXCHANGE_INEREST_INLIST" 
-   (	"LIST_ID" NUMBER, 
-	"OFFER_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER_EXCHANGE_INTEREST_INBOOK
---------------------------------------------------------
+CREATE UNIQUE INDEX book.offer_pk ON
+    book.offer (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INBOOK" 
-   (	"BOOK_ID" NUMBER(*,0), 
-	"OFFER_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER_EXCHANGE_INTEREST_INCLUB
---------------------------------------------------------
+ALTER TABLE book.offer
+    ADD CONSTRAINT offer_pk PRIMARY KEY ( id )
+        USING INDEX book.offer_pk;
 
-  CREATE TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INCLUB" 
-   (	"OFFER_ID" NUMBER, 
-	"CLUB_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER_RENT
---------------------------------------------------------
+CREATE TABLE book.offer_exchange (
+    offer_id           NUMBER NOT NULL,
+    negotiation_price  NUMBER
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."OFFER_RENT" 
-   (	"PRICE_PER_DAY" NUMBER, 
-	"MAXIMUM_RENT_TIME" DATE, 
-	"OFFER_ID" NUMBER
-   ) ;
+CREATE UNIQUE INDEX book.offer_exchange_pk ON
+    book.offer_exchange (
+        offer_id
+    ASC )
+        TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."OFFER_RENT"."MAXIMUM_RENT_TIME" IS 'DENOTES THE DATE I WANT TO RETRIVE MY BOOK IN';
---------------------------------------------------------
---  DDL for Table OFFER_SELL
---------------------------------------------------------
+ALTER TABLE book.offer_exchange
+    ADD CONSTRAINT offer_exchange_pk PRIMARY KEY ( offer_id )
+        USING INDEX book.offer_exchange_pk;
 
-  CREATE TABLE "BOOK"."OFFER_SELL" 
-   (	"OFFER_ID" NUMBER, 
-	"PRICE" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table OFFER_STATE_IMAGE
---------------------------------------------------------
+CREATE TABLE book.offer_exchange_inerest_inlist (
+    list_id   NUMBER NOT NULL,
+    offer_id  NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."OFFER_STATE_IMAGE" 
-   (	"OFFER_ID" NUMBER, 
-	"MEDIA_LINK" VARCHAR2(2000)
-   ) ;
---------------------------------------------------------
---  DDL for Table PAYMENT_METHOD
---------------------------------------------------------
+CREATE TABLE book.offer_exchange_interest_inbook (
+    book_id   NUMBER(*, 0) NOT NULL,
+    offer_id  NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."PAYMENT_METHOD" 
-   (	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table PAYMENT_METHOD_CC
---------------------------------------------------------
+CREATE TABLE book.offer_exchange_interest_inclub (
+    offer_id  NUMBER NOT NULL,
+    club_id   NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."PAYMENT_METHOD_CC" 
-   (	"PAYMENT_ID" NUMBER
-   ) ;
+CREATE TABLE book.offer_rent (
+    price_per_day      NUMBER,
+    maximum_rent_time  DATE,
+    offer_id           NUMBER
+)
+TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."PAYMENT_METHOD_CC"."PAYMENT_ID" IS 'ADD CREDIT CART INFO LATER';
---------------------------------------------------------
---  DDL for Table PAYMENT_METHOD_COD
---------------------------------------------------------
+COMMENT ON COLUMN book.offer_rent.maximum_rent_time IS
+    'DENOTES THE DATE I WANT TO RETRIVE MY BOOK IN';
 
-  CREATE TABLE "BOOK"."PAYMENT_METHOD_COD" 
-   (	"PAYMENT_ID" NUMBER, 
-	"AMOUNT" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table POST
---------------------------------------------------------
+CREATE TABLE book.offer_sell (
+    offer_id  NUMBER,
+    price     NUMBER
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."POST" 
-   (	"CONTENT" VARCHAR2(400), 
-	"MEDIA_LINK" VARCHAR2(2083), 
-	"CLUB_ID" NUMBER, 
-	"CLIENT_ID" NUMBER, 
-	"ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table POST_PULL_OPTION
---------------------------------------------------------
+CREATE TABLE book.offer_state_image (
+    offer_id    NUMBER NOT NULL,
+    media_link  VARCHAR2(2000 BYTE) NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."POST_PULL_OPTION" 
-   (	"POST_ID" NUMBER, 
-	"POLL_OPTION" VARCHAR2(20)
-   ) ;
---------------------------------------------------------
---  DDL for Table SHIPPER
---------------------------------------------------------
+CREATE TABLE book.payment_method (
+    id NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."SHIPPER" 
-   (	"COMPANY_NAME" VARCHAR2(20), 
-	"ID" NUMBER, 
-	"COLUMN1" VARCHAR2(20)
-   ) ;
---------------------------------------------------------
---  DDL for Table SUPER_USER
---------------------------------------------------------
+CREATE UNIQUE INDEX book.payment_methods_pk ON
+    book.payment_method (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
 
-  CREATE TABLE "BOOK"."SUPER_USER" 
-   (	"ACCOUNT_ID" NUMBER
-   ) ;
---------------------------------------------------------
---  DDL for Table TRANSACTION
---------------------------------------------------------
+ALTER TABLE book.payment_method
+    ADD CONSTRAINT payment_methods_pk PRIMARY KEY ( id )
+        USING INDEX book.payment_methods_pk;
 
-  CREATE TABLE "BOOK"."TRANSACTION" 
-   (	"APPROVAL_TIME" TIMESTAMP (6), 
-	"STATE" NUMBER, 
-	"ID" VARCHAR2(20), 
-	"START_RENTING" DATE, 
-	"DURATION" NUMBER, 
-	"TYPE" NUMBER, 
-	"BOOK_ID" NUMBER(*,0), 
-	"BOOK_AMOUNT" NUMBER, 
-	"SOLD_BY" NUMBER, 
-	"BOUGHT_BY" NUMBER, 
-	"SHIPPED_BY" NUMBER, 
-	"SENDING_DATE" DATE, 
-	"RECEIVING_DATE" DATE, 
-	"PAYMENT_METHOD" NUMBER
-   ) ;
+CREATE TABLE book.payment_method_cc (
+    payment_id NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
 
-   COMMENT ON COLUMN "BOOK"."TRANSACTION"."STATE" IS 'State = enum [
+COMMENT ON COLUMN book.payment_method_cc.payment_id IS
+    'ADD CREDIT CART INFO LATER';
+
+CREATE UNIQUE INDEX book.payment_method_cc_pk ON
+    book.payment_method_cc (
+        payment_id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.payment_method_cc
+    ADD CONSTRAINT payment_method_cc_pk PRIMARY KEY ( payment_id )
+        USING INDEX book.payment_method_cc_pk;
+
+CREATE TABLE book.payment_method_cod (
+    payment_id  NUMBER NOT NULL,
+    amount      NUMBER
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.payment_method_cod_pk ON
+    book.payment_method_cod (
+        payment_id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.payment_method_cod
+    ADD CONSTRAINT payment_method_cod_pk PRIMARY KEY ( payment_id )
+        USING INDEX book.payment_method_cod_pk;
+
+CREATE TABLE book.post (
+    content     VARCHAR2(400 BYTE) NOT NULL,
+    media_link  VARCHAR2(2083 BYTE),
+    club_id     NUMBER,
+    client_id   NUMBER NOT NULL,
+    id          NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.post_pk ON
+    book.post (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.post
+    ADD CONSTRAINT post_pk PRIMARY KEY ( id )
+        USING INDEX book.post_pk;
+
+CREATE TABLE book.post_pull_option (
+    post_id      NUMBER,
+    poll_option  VARCHAR2(20 BYTE)
+)
+TABLESPACE system LOGGING;
+
+CREATE TABLE book.shipper (
+    company_name  VARCHAR2(20 BYTE),
+    id            NUMBER NOT NULL,
+    column1       VARCHAR2(20 BYTE)
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.shipper_pk ON
+    book.shipper (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.shipper
+    ADD CONSTRAINT shipper_pk PRIMARY KEY ( id )
+        USING INDEX book.shipper_pk;
+
+CREATE TABLE book.super_user (
+    account_id NUMBER NOT NULL
+)
+TABLESPACE system LOGGING;
+
+CREATE UNIQUE INDEX book.super_user_pk ON
+    book.super_user (
+        account_id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.super_user
+    ADD CONSTRAINT super_user_pk PRIMARY KEY ( account_id )
+        USING INDEX book.super_user_pk;
+
+CREATE TABLE book.transaction (
+    approval_time   TIMESTAMP,
+    state           NUMBER NOT NULL,
+    id              VARCHAR2(20 BYTE) NOT NULL,
+    start_renting   DATE,
+    duration        NUMBER,
+    type            NUMBER NOT NULL,
+    book_id         NUMBER(*, 0) NOT NULL,
+    book_amount     NUMBER,
+    sold_by         NUMBER NOT NULL,
+    bought_by       NUMBER NOT NULL,
+    shipped_by      NUMBER,
+    sending_date    DATE,
+    receiving_date  DATE NOT NULL,
+    payment_method  NUMBER
+)
+TABLESPACE system LOGGING;
+
+COMMENT ON COLUMN book.transaction.state IS
+    'State = enum [
 	In cart,
 	Pending(wait other user approve),
 	approved(user accept sending),
@@ -380,605 +574,283 @@ Shipped(book at buyer hand),
 Shipped Back // for seller
 ]
 ';
-   COMMENT ON COLUMN "BOOK"."TRANSACTION"."TYPE" IS '0:SELLING , 1:RENTING , 2:EXCHANGE';
---------------------------------------------------------
---  DDL for View BOOK_ALL
---------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "BOOK"."BOOK_ALL" ("ID", "REFRENCE_LINK", "DESCRIPTION", "ISBN", "TITLE", "AUTHORS", "OFFER_ID", "OFFER_TYPE", "OFFER_PRICE") AS 
-  select b_all.ID, b_all.REFRENCE_LINK , b_all.DESCRIPTION, b_all.ISBN, b_all.TITLE, b_all.authors,
-LISTAGG(ofr.id,',') WITHIN GROUP (ORDER BY ofr.id) offer_id, 
-LISTAGG(ofr.type, ',') WITHIN GROUP (ORDER BY ofr.id) offer_type,
-LISTAGG(nvl(ofr.price,0), ',') WITHIN GROUP (ORDER BY ofr.id) offer_price
-from 
-(SELECT b.ID , b.REFRENCE_LINK, b.DESCRIPTION, b.ISBN, b.TITLE,
-    LISTAGG(b_a.NAME, ',') WITHIN GROUP (ORDER BY b_a.NAME) authors
-    from book b
-    inner join book_authores b_a on b.id = b_a.id 
-    GROUP BY b.ID , b.REFRENCE_LINK, b.DESCRIPTION, b.ISBN, b.TITLE) b_all
-inner join offer ofr on ofr.book_id = b_all.id
-GROUP BY b_all.ID , b_all.REFRENCE_LINK, b_all.DESCRIPTION, b_all.ISBN, b_all.TITLE, b_all.authors
-;
---------------------------------------------------------
---  DDL for Index ACCOUNT_PHONE_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."ACCOUNT_PHONE_PK" ON "BOOK"."ACCOUNT_PHONE" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index ACCOUNT_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."ACCOUNT_PK" ON "BOOK"."ACCOUNT" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index BOOK_BELONGSTO_CATEGORY_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."BOOK_BELONGSTO_CATEGORY_PK" ON "BOOK"."BOOK_BELONGSTO_CATEGORY" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index BOOK_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."BOOK_PK" ON "BOOK"."BOOK" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CATEGORY_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CATEGORY_PK" ON "BOOK"."CATEGORY" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLIENT_ADDRESS_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLIENT_ADDRESS_PK" ON "BOOK"."CLIENT_ADDRESS" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLIENT_FOLLOW_CLIENT_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLIENT_FOLLOW_CLIENT_PK" ON "BOOK"."CLIENT_FOLLOW_CLIENT" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLIENT_INTERESTEDIN_CATEGO_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLIENT_INTERESTEDIN_CATEGO_PK" ON "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLIENT_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLIENT_PK" ON "BOOK"."CLIENT" ("ACCOUNT_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLIENT_REVIEW_BOOK_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLIENT_REVIEW_BOOK_PK" ON "BOOK"."CLIENT_REVIEW_BOOK" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLINET_JOIN_CLUB_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLINET_JOIN_CLUB_PK" ON "BOOK"."CLINET_JOIN_CLUB" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index CLUB_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."CLUB_PK" ON "BOOK"."CLUB" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index GATE_ACCESS_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."GATE_ACCESS_PK" ON "BOOK"."GATE_ACCESS" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index GATE_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."GATE_PK" ON "BOOK"."GATE" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index LIST_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."LIST_PK" ON "BOOK"."LIST" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index MESSAGE_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."MESSAGE_PK" ON "BOOK"."MESSAGE" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index OFFER_EXCHANGE_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."OFFER_EXCHANGE_PK" ON "BOOK"."OFFER_EXCHANGE" ("OFFER_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index OFFER_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."OFFER_PK" ON "BOOK"."OFFER" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index PAYMENT_METHODS_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."PAYMENT_METHODS_PK" ON "BOOK"."PAYMENT_METHOD" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index PAYMENT_METHOD_CC_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."PAYMENT_METHOD_CC_PK" ON "BOOK"."PAYMENT_METHOD_CC" ("PAYMENT_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index PAYMENT_METHOD_COD_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."PAYMENT_METHOD_COD_PK" ON "BOOK"."PAYMENT_METHOD_COD" ("PAYMENT_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index POST_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."POST_PK" ON "BOOK"."POST" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index SHIPPER_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."SHIPPER_PK" ON "BOOK"."SHIPPER" ("ID") 
-  ;
---------------------------------------------------------
---  DDL for Index SUPER_USER_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."SUPER_USER_PK" ON "BOOK"."SUPER_USER" ("ACCOUNT_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index TABLE1_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."TABLE1_PK" ON "BOOK"."CLIENT_MANAGE_CLUB" ("RELATION_ID") 
-  ;
---------------------------------------------------------
---  DDL for Index TRANSACTION_PK
---------------------------------------------------------
-
-  CREATE UNIQUE INDEX "BOOK"."TRANSACTION_PK" ON "BOOK"."TRANSACTION" ("ID") 
-  ;
---------------------------------------------------------
---  Constraints for Table ACCOUNT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."ACCOUNT" ADD CONSTRAINT "ACCOUNT_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."ACCOUNT" MODIFY ("USERNAME" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."ACCOUNT" MODIFY ("PASSWORD" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."ACCOUNT" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table ACCOUNT_PHONE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."ACCOUNT_PHONE" ADD CONSTRAINT "ACCOUNT_PHONE_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."ACCOUNT_PHONE" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table BOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."BOOK" ADD CONSTRAINT "BOOK_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."BOOK" MODIFY ("TITLE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK" MODIFY ("ISBN" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK" MODIFY ("DESCRIPTION" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table BOOK_AUTHORES
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."BOOK_AUTHORES" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK_AUTHORES" MODIFY ("NAME" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table BOOK_BELONGSTO_CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" ADD CONSTRAINT "BOOK_BELONGSTO_CATEGORY_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" MODIFY ("CATEGORY_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" MODIFY ("BOOK_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CATEGORY" ADD CONSTRAINT "CATEGORY_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CATEGORY" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CATEGORY" MODIFY ("NAME" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT" ADD CONSTRAINT "CLIENT_PK" PRIMARY KEY ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT" MODIFY ("ACCOUNT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT" MODIFY ("FULL_NAME" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT_ADDRESS
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" ADD CONSTRAINT "CLIENT_ADDRESS_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" MODIFY ("COUNTRY" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" MODIFY ("GOVERNMENT" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" MODIFY ("CITY" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT_FOLLOW_CLIENT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_FOLLOW_CLIENT" ADD CONSTRAINT "CLIENT_FOLLOW_CLIENT_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_FOLLOW_CLIENT" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT_INTERESTEDIN_CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" ADD CONSTRAINT "CLIENT_INTERESTEDIN_CATEGO_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" MODIFY ("CATEGORY_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT_MANAGE_CLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" ADD CONSTRAINT "TABLE1_PK" PRIMARY KEY ("RELATION_ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" MODIFY ("PRIVILEGE_LEVEL" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" MODIFY ("CLUB_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" MODIFY ("RELATION_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLIENT_REVIEW_BOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" ADD CONSTRAINT "CLIENT_REVIEW_BOOK_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" MODIFY ("REVIEW_SCORE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" MODIFY ("REVIEW_CONTETN" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" MODIFY ("BOOK_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLINET_JOIN_CLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLINET_JOIN_CLUB" ADD CONSTRAINT "CLINET_JOIN_CLUB_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLINET_JOIN_CLUB" MODIFY ("CLUB_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLINET_JOIN_CLUB" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLINET_JOIN_CLUB" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table CLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLUB" ADD CONSTRAINT "CLUB_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLUB" MODIFY ("NAME" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."CLUB" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table GATE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."GATE" ADD CONSTRAINT "GATE_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."GATE" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table GATE_ACCESS
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."GATE_ACCESS" ADD CONSTRAINT "GATE_ACCESS_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."GATE_ACCESS" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."GATE_ACCESS" MODIFY ("USER_TYPE" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table LIST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."LIST" ADD CONSTRAINT "LIST_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."LIST" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."LIST" MODIFY ("MADE_BY" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."LIST" MODIFY ("NAME" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table MESSAGE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."MESSAGE" ADD CONSTRAINT "MESSAGE_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."MESSAGE" MODIFY ("SENDER_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."MESSAGE" MODIFY ("SEND_DATE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."MESSAGE" MODIFY ("CONTENT" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."MESSAGE" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER" ADD CONSTRAINT "OFFER_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER" MODIFY ("BOOK_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER" MODIFY ("TYPE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER_EXCHANGE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE" ADD CONSTRAINT "OFFER_EXCHANGE_PK" PRIMARY KEY ("OFFER_ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE" MODIFY ("OFFER_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER_EXCHANGE_INEREST_INLIST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INEREST_INLIST" MODIFY ("OFFER_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INEREST_INLIST" MODIFY ("LIST_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER_EXCHANGE_INTEREST_INBOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INBOOK" MODIFY ("OFFER_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INBOOK" MODIFY ("BOOK_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER_EXCHANGE_INTEREST_INCLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INCLUB" MODIFY ("CLUB_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INCLUB" MODIFY ("OFFER_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table OFFER_STATE_IMAGE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_STATE_IMAGE" MODIFY ("MEDIA_LINK" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."OFFER_STATE_IMAGE" MODIFY ("OFFER_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table PAYMENT_METHOD
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."PAYMENT_METHOD" ADD CONSTRAINT "PAYMENT_METHODS_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."PAYMENT_METHOD" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table PAYMENT_METHOD_CC
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_CC" ADD CONSTRAINT "PAYMENT_METHOD_CC_PK" PRIMARY KEY ("PAYMENT_ID") ENABLE;
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_CC" MODIFY ("PAYMENT_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table PAYMENT_METHOD_COD
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_COD" ADD CONSTRAINT "PAYMENT_METHOD_COD_PK" PRIMARY KEY ("PAYMENT_ID") ENABLE;
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_COD" MODIFY ("PAYMENT_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table POST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."POST" ADD CONSTRAINT "POST_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."POST" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."POST" MODIFY ("CLIENT_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."POST" MODIFY ("CONTENT" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table SHIPPER
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."SHIPPER" ADD CONSTRAINT "SHIPPER_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."SHIPPER" MODIFY ("ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table SUPER_USER
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."SUPER_USER" ADD CONSTRAINT "SUPER_USER_PK" PRIMARY KEY ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."SUPER_USER" MODIFY ("ACCOUNT_ID" NOT NULL ENABLE);
---------------------------------------------------------
---  Constraints for Table TRANSACTION
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_PK" PRIMARY KEY ("ID") ENABLE;
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("RECEIVING_DATE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("BOUGHT_BY" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("SOLD_BY" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("BOOK_ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("TYPE" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("ID" NOT NULL ENABLE);
-  ALTER TABLE "BOOK"."TRANSACTION" MODIFY ("STATE" NOT NULL ENABLE);
---------------------------------------------------------
---  Ref Constraints for Table ACCOUNT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."ACCOUNT" ADD CONSTRAINT "ACCOUNT_FK1" FOREIGN KEY ("BLOCKED_BY")
-	  REFERENCES "BOOK"."SUPER_USER" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table ACCOUNT_PHONE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."ACCOUNT_PHONE" ADD CONSTRAINT "ACCOUNT_PHONE_FK1" FOREIGN KEY ("ID")
-	  REFERENCES "BOOK"."ACCOUNT" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table BOOK_AUTHORES
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."BOOK_AUTHORES" ADD CONSTRAINT "BOOK_AUTHORES_FK1" FOREIGN KEY ("ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ON DELETE CASCADE ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table BOOK_BELONGSTO_CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" ADD CONSTRAINT "BOOK_BELONGSTO_CATEGORY_FK1" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."BOOK_BELONGSTO_CATEGORY" ADD CONSTRAINT "BOOK_BELONGSTO_CATEGORY_FK2" FOREIGN KEY ("CATEGORY_ID")
-	  REFERENCES "BOOK"."CATEGORY" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CATEGORY" ADD CONSTRAINT "CATEGORY_FK1" FOREIGN KEY ("SUPER_ID")
-	  REFERENCES "BOOK"."CATEGORY" ("ID") ON DELETE CASCADE ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT" ADD CONSTRAINT "CLIENT_FK1" FOREIGN KEY ("ACCOUNT_ID")
-	  REFERENCES "BOOK"."ACCOUNT" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT_ADDRESS
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_ADDRESS" ADD CONSTRAINT "CLIENT_ADDRESS_FK1" FOREIGN KEY ("ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT_FOLLOW_CLIENT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_FOLLOW_CLIENT" ADD CONSTRAINT "FOLLOWED_CLIENT_FOLLOW_CLIENT" FOREIGN KEY ("FOLLOWED_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_FOLLOW_CLIENT" ADD CONSTRAINT "FOLLOWER_CLIENT_FOLLOW_CLIENT" FOREIGN KEY ("FOLLOWER_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT_INTERESTEDIN_CATEGORY
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" ADD CONSTRAINT "CAT_CLIENT_INTERESTEDIN_CATEG" FOREIGN KEY ("CATEGORY_ID")
-	  REFERENCES "BOOK"."CATEGORY" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_INTERESTEDIN_CATEGORY" ADD CONSTRAINT "CLI_CLIENT_INTERESTEDIN_CATEG" FOREIGN KEY ("CLIENT_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT_MANAGE_CLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" ADD CONSTRAINT "CLIENT_CLINET_MANAGES_CLUB" FOREIGN KEY ("CLIENT_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_MANAGE_CLUB" ADD CONSTRAINT "CLUB_ID_CLIENT_MANAGE_CLUB" FOREIGN KEY ("CLUB_ID")
-	  REFERENCES "BOOK"."CLUB" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLIENT_REVIEW_BOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" ADD CONSTRAINT "CLIENT_REVIEW_BOOK_FK1" FOREIGN KEY ("CLIENT_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."CLIENT_REVIEW_BOOK" ADD CONSTRAINT "CLIENT_REVIEW_BOOK_FK2" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table CLINET_JOIN_CLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."CLINET_JOIN_CLUB" ADD CONSTRAINT "CLINET_CLINET_JOIN_CLUB" FOREIGN KEY ("CLIENT_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table GATE_ACCESS
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."GATE_ACCESS" ADD CONSTRAINT "GATE_ACCESS_FK1" FOREIGN KEY ("ID")
-	  REFERENCES "BOOK"."GATE" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table LIST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."LIST" ADD CONSTRAINT "LIST_FK1" FOREIGN KEY ("MADE_BY")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table LIST_HAVE_BOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."LIST_HAVE_BOOK" ADD CONSTRAINT "LIST_HAVE_BOOK_FK1" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."LIST_HAVE_BOOK" ADD CONSTRAINT "LIST_HAVE_BOOK_FK2" FOREIGN KEY ("LIST_ID")
-	  REFERENCES "BOOK"."LIST" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table MESSAGE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."MESSAGE" ADD CONSTRAINT "RECIVER_MESSAGE_FK" FOREIGN KEY ("RECIVER_ID")
-	  REFERENCES "BOOK"."ACCOUNT" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."MESSAGE" ADD CONSTRAINT "SENDER_MESSAGE_FK" FOREIGN KEY ("SENDER_ID")
-	  REFERENCES "BOOK"."ACCOUNT" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER" ADD CONSTRAINT "OFFER_FK1" FOREIGN KEY ("CLIENT_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER" ADD CONSTRAINT "OFFER_FK2" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER_EXCHANGE
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE" ADD CONSTRAINT "OFFER_EXCHANGE" FOREIGN KEY ("OFFER_ID")
-	  REFERENCES "BOOK"."OFFER" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER_EXCHANGE_INEREST_INLIST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INEREST_INLIST" ADD CONSTRAINT "OFFER_EXCHANGE_INEREST_IN_FK1" FOREIGN KEY ("OFFER_ID")
-	  REFERENCES "BOOK"."OFFER_EXCHANGE" ("OFFER_ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INEREST_INLIST" ADD CONSTRAINT "OFFER_EXCHANGE_INEREST_IN_FK2" FOREIGN KEY ("LIST_ID")
-	  REFERENCES "BOOK"."LIST" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER_EXCHANGE_INTEREST_INBOOK
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INBOOK" ADD CONSTRAINT "OFFER_EXCHANGE_INTEREST_I_FK1" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INBOOK" ADD CONSTRAINT "OFFER_EXCHANGE_INTEREST_I_FK2" FOREIGN KEY ("OFFER_ID")
-	  REFERENCES "BOOK"."OFFER_EXCHANGE" ("OFFER_ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER_EXCHANGE_INTEREST_INCLUB
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INCLUB" ADD CONSTRAINT "OFFER_EXCHANGE_INTEREST_I_FK3" FOREIGN KEY ("OFFER_ID")
-	  REFERENCES "BOOK"."OFFER_EXCHANGE" ("OFFER_ID") ENABLE;
-  ALTER TABLE "BOOK"."OFFER_EXCHANGE_INTEREST_INCLUB" ADD CONSTRAINT "OFFER_EXCHANGE_INTEREST_I_FK4" FOREIGN KEY ("CLUB_ID")
-	  REFERENCES "BOOK"."CLUB" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table OFFER_RENT
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."OFFER_RENT" ADD CONSTRAINT "OFFER_RENT" FOREIGN KEY ("OFFER_ID")
-	  REFERENCES "BOOK"."OFFER" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table PAYMENT_METHOD_CC
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_CC" ADD CONSTRAINT "PAYMENT_METHOD_CC_FK1" FOREIGN KEY ("PAYMENT_ID")
-	  REFERENCES "BOOK"."PAYMENT_METHOD" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table PAYMENT_METHOD_COD
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."PAYMENT_METHOD_COD" ADD CONSTRAINT "PAYMENT_METHOD_COD_FK1" FOREIGN KEY ("PAYMENT_ID")
-	  REFERENCES "BOOK"."PAYMENT_METHOD" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table POST
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."POST" ADD CONSTRAINT "CLIENT" FOREIGN KEY ("CLUB_ID")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."POST" ADD CONSTRAINT "CLUB" FOREIGN KEY ("CLUB_ID")
-	  REFERENCES "BOOK"."CLUB" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table POST_PULL_OPTION
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."POST_PULL_OPTION" ADD CONSTRAINT "POST_PULL_OPTION_FK1" FOREIGN KEY ("POST_ID")
-	  REFERENCES "BOOK"."POST" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table SUPER_USER
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."SUPER_USER" ADD CONSTRAINT "ACCOUNT" FOREIGN KEY ("ACCOUNT_ID")
-	  REFERENCES "BOOK"."ACCOUNT" ("ID") ENABLE;
---------------------------------------------------------
---  Ref Constraints for Table TRANSACTION
---------------------------------------------------------
-
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_FK1" FOREIGN KEY ("BOOK_ID")
-	  REFERENCES "BOOK"."BOOK" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_FK2" FOREIGN KEY ("SOLD_BY")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_FK3" FOREIGN KEY ("BOUGHT_BY")
-	  REFERENCES "BOOK"."CLIENT" ("ACCOUNT_ID") ENABLE;
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_FK4" FOREIGN KEY ("SHIPPED_BY")
-	  REFERENCES "BOOK"."SHIPPER" ("ID") ENABLE;
-  ALTER TABLE "BOOK"."TRANSACTION" ADD CONSTRAINT "TRANSACTION_FK5" FOREIGN KEY ("PAYMENT_METHOD")
-	  REFERENCES "BOOK"."PAYMENT_METHOD" ("ID") ENABLE;
+
+COMMENT ON COLUMN book.transaction.type IS
+    '0:SELLING , 1:RENTING , 2:EXCHANGE';
+
+CREATE UNIQUE INDEX book.transaction_pk ON
+    book.transaction (
+        id
+    ASC )
+        TABLESPACE system LOGGING;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_pk PRIMARY KEY ( id )
+        USING INDEX book.transaction_pk;
+
+ALTER TABLE book.super_user
+    ADD CONSTRAINT account FOREIGN KEY ( account_id )
+        REFERENCES book.account ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.account
+    ADD CONSTRAINT account_fk1 FOREIGN KEY ( blocked_by )
+        REFERENCES book.super_user ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.account_phone
+    ADD CONSTRAINT account_phone_fk1 FOREIGN KEY ( id )
+        REFERENCES book.account ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.book_authores
+    ADD CONSTRAINT book_authores_fk1 FOREIGN KEY ( id )
+        REFERENCES book.book ( id )
+            ON DELETE CASCADE
+    NOT DEFERRABLE;
+
+ALTER TABLE book.book_belongsto_category
+    ADD CONSTRAINT book_belongsto_category_fk1 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.book_belongsto_category
+    ADD CONSTRAINT book_belongsto_category_fk2 FOREIGN KEY ( category_id )
+        REFERENCES book.category ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_interestedin_category
+    ADD CONSTRAINT cat_client_interestedin_categ FOREIGN KEY ( category_id )
+        REFERENCES book.category ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.category
+    ADD CONSTRAINT category_fk1 FOREIGN KEY ( super_id )
+        REFERENCES book.category ( id )
+            ON DELETE CASCADE
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_interestedin_category
+    ADD CONSTRAINT cli_client_interestedin_categ FOREIGN KEY ( client_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.post
+    ADD CONSTRAINT client FOREIGN KEY ( club_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_address
+    ADD CONSTRAINT client_address_fk1 FOREIGN KEY ( id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_manage_club
+    ADD CONSTRAINT client_clinet_manages_club FOREIGN KEY ( client_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client
+    ADD CONSTRAINT client_fk1 FOREIGN KEY ( account_id )
+        REFERENCES book.account ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_review_book
+    ADD CONSTRAINT client_review_book_fk1 FOREIGN KEY ( client_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_review_book
+    ADD CONSTRAINT client_review_book_fk2 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.clinet_join_club
+    ADD CONSTRAINT clinet_clinet_join_club FOREIGN KEY ( client_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.post
+    ADD CONSTRAINT club FOREIGN KEY ( club_id )
+        REFERENCES book.club ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_manage_club
+    ADD CONSTRAINT club_id_client_manage_club FOREIGN KEY ( club_id )
+        REFERENCES book.club ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_follow_client
+    ADD CONSTRAINT followed_client_follow_client FOREIGN KEY ( followed_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.client_follow_client
+    ADD CONSTRAINT follower_client_follow_client FOREIGN KEY ( follower_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.gate_access
+    ADD CONSTRAINT gate_access_fk1 FOREIGN KEY ( id )
+        REFERENCES book.gate ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.list
+    ADD CONSTRAINT list_fk1 FOREIGN KEY ( made_by )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.list_have_book
+    ADD CONSTRAINT list_have_book_fk1 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.list_have_book
+    ADD CONSTRAINT list_have_book_fk2 FOREIGN KEY ( list_id )
+        REFERENCES book.list ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange
+    ADD CONSTRAINT offer_exchange FOREIGN KEY ( offer_id )
+        REFERENCES book.offer ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_inerest_inlist
+    ADD CONSTRAINT offer_exchange_inerest_in_fk1 FOREIGN KEY ( offer_id )
+        REFERENCES book.offer_exchange ( offer_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_inerest_inlist
+    ADD CONSTRAINT offer_exchange_inerest_in_fk2 FOREIGN KEY ( list_id )
+        REFERENCES book.list ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_interest_inbook
+    ADD CONSTRAINT offer_exchange_interest_i_fk1 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_interest_inbook
+    ADD CONSTRAINT offer_exchange_interest_i_fk2 FOREIGN KEY ( offer_id )
+        REFERENCES book.offer_exchange ( offer_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_interest_inclub
+    ADD CONSTRAINT offer_exchange_interest_i_fk3 FOREIGN KEY ( offer_id )
+        REFERENCES book.offer_exchange ( offer_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_exchange_interest_inclub
+    ADD CONSTRAINT offer_exchange_interest_i_fk4 FOREIGN KEY ( club_id )
+        REFERENCES book.club ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer
+    ADD CONSTRAINT offer_fk1 FOREIGN KEY ( client_id )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer
+    ADD CONSTRAINT offer_fk2 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.offer_rent
+    ADD CONSTRAINT offer_rent FOREIGN KEY ( offer_id )
+        REFERENCES book.offer ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.payment_method_cc
+    ADD CONSTRAINT payment_method_cc_fk1 FOREIGN KEY ( payment_id )
+        REFERENCES book.payment_method ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.payment_method_cod
+    ADD CONSTRAINT payment_method_cod_fk1 FOREIGN KEY ( payment_id )
+        REFERENCES book.payment_method ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.post_pull_option
+    ADD CONSTRAINT post_pull_option_fk1 FOREIGN KEY ( post_id )
+        REFERENCES book.post ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.message
+    ADD CONSTRAINT reciver_message_fk FOREIGN KEY ( reciver_id )
+        REFERENCES book.account ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.message
+    ADD CONSTRAINT sender_message_fk FOREIGN KEY ( sender_id )
+        REFERENCES book.account ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_fk1 FOREIGN KEY ( book_id )
+        REFERENCES book.book ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_fk2 FOREIGN KEY ( sold_by )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_fk3 FOREIGN KEY ( bought_by )
+        REFERENCES book.client ( account_id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_fk4 FOREIGN KEY ( shipped_by )
+        REFERENCES book.shipper ( id )
+    NOT DEFERRABLE;
+
+ALTER TABLE book.transaction
+    ADD CONSTRAINT transaction_fk5 FOREIGN KEY ( payment_method )
+        REFERENCES book.payment_method ( id )
+    NOT DEFERRABLE;
+
+
+
+-- Oracle SQL Developer Data Modeler Summary Report: 
+-- 
+-- CREATE TABLE                            35
+-- CREATE INDEX                            26
+-- ALTER TABLE                             70
+-- CREATE VIEW                              0
+-- ALTER VIEW                               0
+-- CREATE PACKAGE                           0
+-- CREATE PACKAGE BODY                      0
+-- CREATE PROCEDURE                         0
+-- CREATE FUNCTION                          0
+-- CREATE TRIGGER                           0
+-- ALTER TRIGGER                            0
+-- CREATE COLLECTION TYPE                   0
+-- CREATE STRUCTURED TYPE                   0
+-- CREATE STRUCTURED TYPE BODY              0
+-- CREATE CLUSTER                           0
+-- CREATE CONTEXT                           0
+-- CREATE DATABASE                          0
+-- CREATE DIMENSION                         0
+-- CREATE DIRECTORY                         0
+-- CREATE DISK GROUP                        0
+-- CREATE ROLE                              0
+-- CREATE ROLLBACK SEGMENT                  0
+-- CREATE SEQUENCE                          0
+-- CREATE MATERIALIZED VIEW                 0
+-- CREATE MATERIALIZED VIEW LOG             0
+-- CREATE SYNONYM                           0
+-- CREATE TABLESPACE                        1
+-- CREATE USER                              1
+-- 
+-- DROP TABLESPACE                          0
+-- DROP DATABASE                            0
+-- 
+-- REDACTION POLICY                         0
+-- 
+-- ORDS DROP SCHEMA                         0
+-- ORDS ENABLE SCHEMA                       0
+-- ORDS ENABLE OBJECT                       0
+-- 
+-- ERRORS                                   0
+-- WARNINGS                                 1
